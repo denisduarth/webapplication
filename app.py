@@ -34,9 +34,9 @@ def create():
 
 @app.route('/save', methods=['POST'])
 def save():
-    autor = request.form['Autor'].capitalize()
-    titulo = request.form['Título'].capitalize()
-    situacao = request.form['Situação'].capitalize()
+    autor = request.form['Autor']
+    titulo = request.form['Título']
+    situacao = request.form['Situação']
     lista_livros.append({'id':uuid4(),'autor': autor,'título': titulo,'situação': situacao})
     return redirect("/")
 
@@ -52,31 +52,16 @@ def edit(id):
     for livro in lista_livros:
         if id == str(livro['id']):
             livro == livro['id']
-        return render_template('update.html')
+            return render_template('update.html',livro=livro)
 
-@app.route('/update/<id>')
+@app.route('/edit/livro/<id>',methods=["POST"])
 def update(id):
-    try:
-        novo_autor = request.form['Autor'].capitalize()
-        novo_titulo = request.form['Título'].capitalize()
-        nova_situacao = request.form['Situação'].capitalize()
-        
-        for livro in lista_livros:
-            if id == str(livro['id']):
-                livro['autor'] = novo_autor
-                livro['título'] = novo_titulo
-                livro['situação'] = nova_situação
-                lista_livros[lista_livros.index(livro)] = ({'id':id,'autor':novo_autor,'título':novo_titulo,'situação':nova_situacao})
-                
-                with open('lista_de_livros.csv', 'wt') as file_out:
-                    escritor = csv.DictWriter(file_out, ['id', 'autor', 'título', 'situação'])
-                    escritor.writeheader()
-                    escritor.writerows(livro)
-                    file_out.close()
-                
-                return redirect("/")
+    for livro in lista_livros:
+        if id == str(livro['id']):
+            novo_autor = request.form['Autor']
+            novo_titulo = request.form['Título']
+            nova_situacao = request.form['Situação']
+            lista_livros[lista_livros.index(livro)] = {'id':livro['id'],'autor':novo_autor,'título':novo_titulo,'situação':nova_situacao}
+            return redirect("/")  
     
-    except:
-        return 'Aconteceu algo de errado'
-
 app.run(debug=True)
